@@ -41,13 +41,19 @@ router.post("/", (req, res) => {
 
 router.put("/:id", (req, res) => {
   // const newProduct = new Product(req.body);
-  Product.findByIdAndUpdate(req.params.id, req.body)
-    .then(() => {
-      res.send({ message: "Success!" });
-    })
-    .catch((err) => {
-      throw err;
-    });
+  Company.findById({ _id: req.body.company }).then((data) => {
+    const body = {
+      ...req.body,
+      company: data,
+    };
+    Product.findByIdAndUpdate(req.params.id, body)
+      .then(() => {
+        res.send({ message: "Success!" });
+      })
+      .catch((err) => {
+        throw err;
+      });
+  });
 });
 
 //Delete Product

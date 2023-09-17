@@ -7,17 +7,19 @@ const CompanyDeleteModal: React.FC<{
   company: Company;
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
-}> = ({ company, open, setOpen }) => {
+  reload: () => void;
+}> = ({ company, open, setOpen, reload }) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
 
   const handleOk = async () => {
     setConfirmLoading(true);
     const resp = await axios.delete(
-      `http://localhost:8000/api/companies/${company.id}`
+      `http://localhost:8000/api/companies/${company._id}`
     );
     console.log(resp);
     setConfirmLoading(false);
     setOpen(false);
+    reload();
   };
 
   const handleCancel = () => {

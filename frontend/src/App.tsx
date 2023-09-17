@@ -6,8 +6,8 @@ import Signup from "./pages/Signup";
 import { LayoutItemsProps } from "./components/Layout";
 import AppLayout from "./components/Layout";
 import Home from "./pages/Home";
-import Companies from "./pages/Companies";
-import Products from "./pages/Products";
+import Companies from "./pages/company/Companies";
+import Products from "./pages/product/Products";
 
 const items: LayoutItemsProps[] = [
   {

@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 // import qs from "qs";
-import { Table } from "antd";
+import { Button, Table } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import type { FilterValue, SorterResult } from "antd/es/table/interface";
 import axios from "axios";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  PlusCircleOutlined,
+} from "@ant-design/icons";
 import CompanyDeleteModal from "./CompanyDeleteModal";
 import { Company } from "./Companies.types";
+import CompanyCreateModal from "./CompanyCreateModal";
+import CompanyEditModal from "./CompanyEditModal";
 
 interface TableParams {
   pagination?: TablePaginationConfig;
@@ -26,7 +32,7 @@ const Companies: React.FC = () => {
     {
       title: "ID",
       dataIndex: "_id",
-      width: "20%",
+      width: "10%",
     },
     {
       title: "Name",
@@ -36,7 +42,7 @@ const Companies: React.FC = () => {
     {
       title: "Legal Number",
       dataIndex: "legalNumber",
-      width: "20%",
+      width: "10%",
     },
     {
       title: "Incorporation Country",
@@ -54,22 +60,42 @@ const Companies: React.FC = () => {
       render: (company) => {
         return (
           <>
-            <EditOutlined />
-            <DeleteOutlined onClick={() => showDeleteModal(company)} />
+            <Button
+              shape="round"
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() => handleEdit(company)}
+            >
+              Edit
+            </Button>
+            <Button
+              shape="round"
+              size="small"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={() => showDeleteModal(company)}
+            >
+              Delete
+            </Button>
+            {/* <EditOutlined onClick={() => handleEdit(company)} /> */}
+            {/* <DeleteOutlined onClick={() => showDeleteModal(company)} /> */}
           </>
         );
       },
     },
   ];
   const [openDelete, setOpenDelete] = useState(false);
+  const [openAdd, setOpenAdd] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<Company>({
-    id: 0,
+    _id: 0,
     name: "",
     legalNumber: 0,
     incorporationCountry: "",
     website: "",
   });
 
+  const [update, setUpdate] = React.useState(false);
   const [tableData, setTableData] = useState<Company[]>([]);
   const [loading, setLoading] = useState(false);
   const [tableParams, setTableParams] = useState<TableParams>({
@@ -80,8 +106,22 @@ const Companies: React.FC = () => {
   });
 
   const showDeleteModal = (company: Company) => {
+    console.log(company);
     setOpenDelete(true);
     setSelectedCompany(company);
+  };
+
+  const handleAdd = () => {
+    setOpenAdd(true);
+  };
+
+  const handleEdit = (company: Company) => {
+    setOpenEdit(true);
+    setSelectedCompany(company);
+  };
+
+  const reload = () => {
+    setUpdate(!update);
   };
 
   useEffect(() => {
@@ -90,7 +130,6 @@ const Companies: React.FC = () => {
       const { data } = await axios.get<Company[]>(
         `http://localhost:8000/api/companies`
       );
-      console.log(data);
       if (data) {
         setTableData(data);
       }
@@ -106,7 +145,7 @@ const Companies: React.FC = () => {
       });
     };
     fetchData();
-  }, []);
+  }, [update]);
 
   const handleTableChange = (
     pagination: TablePaginationConfig,
@@ -126,22 +165,38 @@ const Companies: React.FC = () => {
   };
 
   return (
-    <>
+    <div>
       <CompanyDeleteModal
         company={selectedCompany}
         open={openDelete}
         setOpen={setOpenDelete}
+        reload={reload}
       />
+      <CompanyCreateModal open={openAdd} setOpen={setOpenAdd} reload={reload} />
+      <CompanyEditModal
+        company={selectedCompany}
+        open={openEdit}
+        setOpen={setOpenEdit}
+        reload={reload}
+      />
+      <Button
+        onClick={() => handleAdd()}
+        type="primary"
+        style={{ marginBottom: 16 }}
+      >
+        <PlusCircleOutlined />
+        Create Company
+      </Button>
       <Table
         columns={columns}
-        rowKey={(record) => record.id}
+        rowKey={(record) => record._id}
         dataSource={tableData}
         pagination={tableParams.pagination}
         loading={loading}
         onChange={handleTableChange}
-        scroll={{ x: 1000, y: 500 }}
+        scroll={{ x: "max-content", y: 500 }} // y: 500
       />
-    </>
+    </div>
   );
 };
 
