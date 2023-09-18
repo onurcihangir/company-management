@@ -53,7 +53,8 @@ const AppLayout: React.FC<{
             type="primary"
             htmlType="submit"
             onClick={() => {
-              localStorage.setItem("isLoggedIn", "");
+              localStorage.removeItem("token");
+              localStorage.removeItem("isLoggedIn");
               navigate("/");
             }}
           >
@@ -69,8 +70,8 @@ const AppLayout: React.FC<{
             style={{
               padding: 24,
               minHeight: 360,
-            //   height: "100vh",
-            //   width: "100%",
+              //   height: "100vh",
+              //   width: "100%",
               display: "flex",
               // flexDirection: "column",
               alignItems: "flex-start",

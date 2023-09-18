@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 // import qs from "qs";
-import { Button, Table } from "antd";
+import { Button, Table, message } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import type { FilterValue, SorterResult } from "antd/es/table/interface";
 import axios from "axios";
@@ -84,6 +84,7 @@ const Companies: React.FC = () => {
       },
     },
   ];
+  const [messageApi, contextHolder] = message.useMessage();
   const [openDelete, setOpenDelete] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
@@ -128,7 +129,10 @@ const Companies: React.FC = () => {
     const fetchData = async () => {
       setLoading(true);
       const { data } = await axios.get<Company[]>(
-        `http://localhost:8000/api/companies`
+        `http://localhost:8000/api/companies`,
+        {
+          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+        }
       );
       if (data) {
         setTableData(data);
@@ -166,18 +170,26 @@ const Companies: React.FC = () => {
 
   return (
     <div>
+      {contextHolder}
       <CompanyDeleteModal
         company={selectedCompany}
         open={openDelete}
         setOpen={setOpenDelete}
         reload={reload}
+        messageApi={messageApi}
       />
-      <CompanyCreateModal open={openAdd} setOpen={setOpenAdd} reload={reload} />
+      <CompanyCreateModal
+        open={openAdd}
+        setOpen={setOpenAdd}
+        reload={reload}
+        messageApi={messageApi}
+      />
       <CompanyEditModal
         company={selectedCompany}
         open={openEdit}
         setOpen={setOpenEdit}
         reload={reload}
+        messageApi={messageApi}
       />
       <Button
         onClick={() => handleAdd()}

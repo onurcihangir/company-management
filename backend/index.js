@@ -30,5 +30,6 @@ app.use(
 
 app.use("/api/companies", require("./routes/api/companies"));
 app.use("/api/products", require("./routes/api/products"));
+app.use("/api/auth", require("./routes/api/users"));
 
 app.listen(8000, () => console.log("Server started"));

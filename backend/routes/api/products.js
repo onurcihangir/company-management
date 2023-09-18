@@ -6,18 +6,19 @@ const router = express.Router();
 
 const Product = require("../../products");
 const Company = require("../../companies");
+const auth = require("../../auth");
 
-router.get("/", (req, res) => {
+router.get("/", auth, (req, res) => {
   Product.find()
     .then((data) => {
-      res.send(data);
+      res.status(200).send(data);
     })
     .catch((err) => {
       throw err;
     });
 });
 
-router.post("/", (req, res) => {
+router.post("/", auth, (req, res) => {
   Company.findById({ _id: req.body.company }).then((data) => {
     const newProduct = new Product({
       name: req.body.name,
@@ -29,7 +30,7 @@ router.post("/", (req, res) => {
     newProduct
       .save()
       .then(() => {
-        res.send({ message: "Success!" });
+        res.status(200).send({ message: "Success!" });
       })
       .catch((err) => {
         throw err;
@@ -39,7 +40,7 @@ router.post("/", (req, res) => {
 
 //Update Product
 
-router.put("/:id", (req, res) => {
+router.put("/:id", auth, (req, res) => {
   // const newProduct = new Product(req.body);
   Company.findById({ _id: req.body.company }).then((data) => {
     const body = {
@@ -48,7 +49,7 @@ router.put("/:id", (req, res) => {
     };
     Product.findByIdAndUpdate(req.params.id, body)
       .then(() => {
-        res.send({ message: "Success!" });
+        res.status(200).send({ message: "Success!" });
       })
       .catch((err) => {
         throw err;
@@ -58,10 +59,10 @@ router.put("/:id", (req, res) => {
 
 //Delete Product
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", auth, (req, res) => {
   Product.findByIdAndDelete(req.params.id)
     .then(() => {
-      res.send({ message: "Success!" });
+      res.status(200).send({ message: "Success!" });
     })
     .catch((err) => {
       throw err;

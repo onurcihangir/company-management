@@ -3,13 +3,15 @@ import axios from "axios";
 import { Input, Modal, Select } from "antd";
 import { Product } from "./Products.types";
 import { Company } from "../company/Companies.types";
+import { MessageInstance } from "antd/es/message/interface";
 
 const ProductCreateModal: React.FC<{
   companies: { label: string; value: string }[];
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   reload: () => void;
-}> = ({ companies, open, setOpen, reload }) => {
+  messageApi: MessageInstance;
+}> = ({ companies, open, setOpen, reload, messageApi }) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [newProduct, setNewProduct] = useState<Product>({
     _id: 0,
@@ -28,8 +30,13 @@ const ProductCreateModal: React.FC<{
     console.log(newProduct);
     const resp = await axios.post(
       `http://localhost:8000/api/products/`,
-      newProduct
+      newProduct,
+      { headers: { Authorization: "Bearer " + localStorage.getItem("token") } }
     );
+    messageApi.open({
+      type: "success",
+      content: resp.data.message,
+    });
     console.log(resp);
     setConfirmLoading(false);
     handleCancel();

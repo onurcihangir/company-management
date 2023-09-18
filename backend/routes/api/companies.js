@@ -5,19 +5,19 @@ const router = express.Router();
 // const uuid = require("uuid");
 
 const Company = require("../../companies");
+const auth = require("../../auth");
 
-router.get("/", (req, res) => {
+router.get("/", auth, (req, res) => {
   Company.find()
     .then((data) => {
-      res.send(data);
+      res.status(200).send(data);
     })
     .catch((err) => {
       throw err;
     });
 });
 
-router.post("/", (req, res) => {
-  console.log(req);
+router.post("/", auth, (req, res) => {
   const newCompany = new Company({
     name: req.body.name,
     legalNumber: req.body.legalNumber,
@@ -25,12 +25,10 @@ router.post("/", (req, res) => {
     website: req.body.website,
   });
 
-  console.log(newCompany);
-
   newCompany
     .save()
     .then(() => {
-      res.send({ message: "Success!" });
+      res.status(200).send({ message: "Success!" });
     })
     .catch((err) => {
       throw err;
@@ -43,11 +41,11 @@ router.post("/", (req, res) => {
 
 //Update Company
 
-router.put("/:id", (req, res) => {
+router.put("/:id", auth, (req, res) => {
   // const newCompany = new Company(req.body);
   Company.findByIdAndUpdate(req.params.id, req.body)
     .then(() => {
-      res.send({ message: "Success!" });
+      res.status(200).send({ message: "Success!" });
     })
     .catch((err) => {
       throw err;
@@ -56,10 +54,10 @@ router.put("/:id", (req, res) => {
 
 //Delete Company
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", auth, (req, res) => {
   Company.findByIdAndDelete(req.params.id)
     .then(() => {
-      res.send({ message: "Success!" });
+      res.status(200).send({ message: "Success!" });
     })
     .catch((err) => {
       throw err;

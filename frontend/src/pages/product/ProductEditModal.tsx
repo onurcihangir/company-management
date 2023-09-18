@@ -1,7 +1,8 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
 import axios from "axios";
 import { Input, Modal, Select } from "antd";
 import { Product } from "./Products.types";
+import { MessageInstance } from "antd/es/message/interface";
 
 const ProductEditModal: React.FC<{
   companies: { label: string; value: string }[];
@@ -9,11 +10,12 @@ const ProductEditModal: React.FC<{
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   reload: () => void;
-}> = ({ companies, product, open, setOpen, reload }) => {
+  messageApi: MessageInstance;
+}> = ({ companies, product, open, setOpen, reload, messageApi }) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [newProduct, setNewProduct] = useState<Product>(product);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setNewProduct(product);
   }, [product]);
 
@@ -21,8 +23,13 @@ const ProductEditModal: React.FC<{
     setConfirmLoading(true);
     const resp = await axios.put(
       `http://localhost:8000/api/products/${product._id}`,
-      newProduct
+      newProduct,
+      { headers: { Authorization: "Bearer " + localStorage.getItem("token") } }
     );
+    messageApi.open({
+      type: "success",
+      content: resp.data.message,
+    });
     console.log(resp);
     setConfirmLoading(false);
     handleCancel();

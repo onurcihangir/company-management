@@ -2,12 +2,14 @@ import React, { Dispatch, SetStateAction, useState } from "react";
 import axios from "axios";
 import { Input, Modal } from "antd";
 import { Company } from "./Companies.types";
+import { MessageInstance } from "antd/es/message/interface";
 
 const CompanyCreateModal: React.FC<{
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   reload: () => void;
-}> = ({ open, setOpen, reload }) => {
+  messageApi: MessageInstance;
+}> = ({ open, setOpen, reload, messageApi }) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [newCompany, setNewCompany] = useState<Company>({
     _id: 0,
@@ -21,9 +23,14 @@ const CompanyCreateModal: React.FC<{
     setConfirmLoading(true);
     const resp = await axios.post(
       `http://localhost:8000/api/companies/`,
-      newCompany
+      newCompany,
+      { headers: { Authorization: "Bearer " + localStorage.getItem("token") } }
     );
     console.log(resp);
+    messageApi.open({
+      type: "success",
+      content: resp.data.message,
+    });
     setConfirmLoading(false);
     handleCancel();
     reload();

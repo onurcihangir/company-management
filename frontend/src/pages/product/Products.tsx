@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 // import qs from "qs";
-import { Button, Table } from "antd";
+import { Button, Table, message } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
@@ -29,6 +29,7 @@ interface TableParams {
 // });
 
 const Products: React.FC = () => {
+  const [messageApi, contextHolder] = message.useMessage();
   const [update, setUpdate] = React.useState(false);
   const [tableData, setTableData] = useState<Product[]>();
   const [loading, setLoading] = useState(false);
@@ -53,7 +54,9 @@ const Products: React.FC = () => {
       name: "",
     },
   });
-  const [companies, setCompanies] = useState<{ label: string; value: string; }[]>([]);
+  const [companies, setCompanies] = useState<
+    { label: string; value: string }[]
+  >([]);
 
   const columns: ColumnsType<Product> = [
     {
@@ -141,7 +144,10 @@ const Products: React.FC = () => {
     const fetchCompanies = async () => {
       setLoading(true);
       const { data } = await axios.get<Company[]>(
-        `http://localhost:8000/api/companies`
+        `http://localhost:8000/api/companies`,
+        {
+          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+        }
       );
       if (data) {
         let arr = [];
@@ -158,7 +164,10 @@ const Products: React.FC = () => {
     const fetchData = async () => {
       setLoading(true);
       const { data } = await axios.get<Product[]>(
-        `http://localhost:8000/api/products`
+        `http://localhost:8000/api/products`,
+        {
+          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+        }
       );
       if (data) {
         setTableData(data);
@@ -199,17 +208,20 @@ const Products: React.FC = () => {
 
   return (
     <div>
+      {contextHolder}
       <ProductDeleteModal
         product={selectedProduct}
         open={openDelete}
         setOpen={setOpenDelete}
         reload={reload}
+        messageApi={messageApi}
       />
       <ProductCreateModal
         companies={companies}
         open={openAdd}
         setOpen={setOpenAdd}
         reload={reload}
+        messageApi={messageApi}
       />
       <ProductEditModal
         companies={companies}
@@ -217,6 +229,7 @@ const Products: React.FC = () => {
         open={openEdit}
         setOpen={setOpenEdit}
         reload={reload}
+        messageApi={messageApi}
       />
       <Button
         onClick={() => handleAdd()}
