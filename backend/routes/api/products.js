@@ -9,12 +9,30 @@ const Company = require("../../companies");
 const auth = require("../../auth");
 
 router.get("/", auth, (req, res) => {
-  Product.find()
-    .then((data) => {
-      res.status(200).send(data);
+  var page = parseInt(req.query.current) || 0; //for next page pass 1 here
+  var limit = parseInt(req.query.pageSize) || 10;
+  var query = {};
+  Product.find(query)
+    .skip((page - 1) * limit) //Notice here
+    .limit(limit)
+    .exec()
+    .then((doc) => {
+      Product.estimatedDocumentCount(query)
+        .exec()
+        .then((count) => {
+          return res.json({
+            total: count,
+            page: page,
+            pageSize: doc.length,
+            products: doc,
+          });
+        })
+        .catch((err) => {
+          return res.json(err);
+        });
     })
     .catch((err) => {
-      throw err;
+      return res.json(err);
     });
 });
 

@@ -10,7 +10,7 @@ import {
   PlusCircleOutlined,
 } from "@ant-design/icons";
 import CompanyDeleteModal from "./CompanyDeleteModal";
-import { Company } from "./Companies.types";
+import { Company, CompanyRequestResponse } from "./Companies.types";
 import CompanyCreateModal from "./CompanyCreateModal";
 import CompanyEditModal from "./CompanyEditModal";
 
@@ -107,7 +107,6 @@ const Companies: React.FC = () => {
   });
 
   const showDeleteModal = (company: Company) => {
-    console.log(company);
     setOpenDelete(true);
     setSelectedCompany(company);
   };
@@ -128,28 +127,34 @@ const Companies: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const { data } = await axios.get<Company[]>(
+      const { data } = await axios.get<CompanyRequestResponse>(
         `http://localhost:8000/api/companies`,
         {
+          params: {
+            current: tableParams.pagination?.current,
+            pageSize: tableParams.pagination?.pageSize,
+          },
           headers: { Authorization: "Bearer " + localStorage.getItem("token") },
         }
       );
       if (data) {
-        setTableData(data);
+        setTableData(data.companies);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: data.total,
+          },
+        });
       }
       setLoading(false);
-      setTableParams({
-        ...tableParams,
-        pagination: {
-          ...tableParams.pagination,
-          total: 200,
-          // 200 is mock data, you should read it from server
-          // total: data.totalCount,
-        },
-      });
     };
     fetchData();
-  }, [update]);
+  }, [
+    update,
+    tableParams.pagination?.current,
+    tableParams.pagination?.pageSize,
+  ]);
 
   const handleTableChange = (
     pagination: TablePaginationConfig,

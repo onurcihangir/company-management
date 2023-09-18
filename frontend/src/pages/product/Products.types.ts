@@ -9,3 +9,10 @@ export type Product = {
     name: string;
   };
 };
+
+export type ProductRequestResponse = {
+  page: number;
+  pageSize: number;
+  total: number;
+  products: Product[];
+};

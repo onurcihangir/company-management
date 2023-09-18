@@ -9,7 +9,7 @@ import {
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import type { FilterValue, SorterResult } from "antd/es/table/interface";
 import axios from "axios";
-import { Product } from "./Products.types";
+import { Product, ProductRequestResponse } from "./Products.types";
 import ProductEditModal from "./ProductEditModal";
 import ProductCreateModal from "./ProductCreateModal";
 import ProductDeleteModal from "./ProductDeleteModal";
@@ -37,7 +37,6 @@ const Products: React.FC = () => {
     pagination: {
       current: 1,
       pageSize: 10,
-      total: 200,
     },
   });
   const [openDelete, setOpenDelete] = useState(false);
@@ -144,7 +143,7 @@ const Products: React.FC = () => {
     const fetchCompanies = async () => {
       setLoading(true);
       const { data } = await axios.get<Company[]>(
-        `http://localhost:8000/api/companies`,
+        `http://localhost:8000/api/companies/getList`,
         {
           headers: { Authorization: "Bearer " + localStorage.getItem("token") },
         }
@@ -163,29 +162,36 @@ const Products: React.FC = () => {
     };
     const fetchData = async () => {
       setLoading(true);
-      const { data } = await axios.get<Product[]>(
+      const { data } = await axios.get<ProductRequestResponse>(
         `http://localhost:8000/api/products`,
         {
+          params: {
+            current: tableParams.pagination?.current,
+            pageSize: tableParams.pagination?.pageSize,
+          },
           headers: { Authorization: "Bearer " + localStorage.getItem("token") },
         }
       );
       if (data) {
-        setTableData(data);
+        console.log(data)
+        setTableData(data.products);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: data.total,
+          },
+        });
       }
       setLoading(false);
-      // setTableParams({
-      //   ...tableParams,
-      //   pagination: {
-      //     ...tableParams.pagination,
-      //     total: 200,
-      //     // 200 is mock data, you should read it from server
-      //     // total: data.totalCount,
-      //   },
-      // });
     };
     fetchData();
     fetchCompanies();
-  }, [update, tableParams]);
+  }, [
+    update,
+    tableParams.pagination?.current,
+    tableParams.pagination?.pageSize,
+  ]);
 
   const handleTableChange = (
     pagination: TablePaginationConfig,
@@ -197,8 +203,6 @@ const Products: React.FC = () => {
       filters,
       ...sorter,
     });
-    console.log(tableParams);
-    console.log(pagination, filters, sorter);
 
     // // `dataSource` is useless since `pageSize` changed
     // if (pagination.pageSize !== tableParams.pagination?.pageSize) {
