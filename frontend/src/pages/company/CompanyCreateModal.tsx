@@ -57,7 +57,9 @@ const CompanyCreateModal: React.FC<{
         onCancel={handleCancel}
       >
         <Input
+          style={{ marginBottom: 10 }}
           placeholder="Name"
+          addonBefore={<div style={{ width: "102.29px" }}>Name</div>}
           value={newCompany?.name}
           onChange={(event) =>
             setNewCompany({
@@ -67,7 +69,9 @@ const CompanyCreateModal: React.FC<{
           }
         />
         <Input
+          style={{ marginBottom: 10 }}
           placeholder="Legal Number"
+          addonBefore={<div style={{ width: "102.29px" }}>Legal Number</div>}
           value={newCompany?.legalNumber}
           onChange={(event) =>
             setNewCompany({
@@ -77,7 +81,19 @@ const CompanyCreateModal: React.FC<{
           }
         />
         <Input
+          style={{ marginBottom: 10 }}
           placeholder="Incorporation Country"
+          addonBefore={
+            <div
+              style={{
+                width: "102.29px",
+                wordWrap: "break-word",
+                whiteSpace: "normal",
+              }}
+            >
+              Incorporation Country
+            </div>
+          }
           value={newCompany?.incorporationCountry}
           onChange={(event) =>
             setNewCompany({
@@ -88,6 +104,7 @@ const CompanyCreateModal: React.FC<{
         />
         <Input
           placeholder="Website"
+          addonBefore={<div style={{ width: "102.29px" }}>Website</div>}
           value={newCompany?.website}
           onChange={(event) =>
             setNewCompany({

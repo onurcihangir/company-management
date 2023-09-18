@@ -8,11 +8,19 @@ const Company = require("../../companies");
 const auth = require("../../auth");
 
 router.get("/", auth, (req, res) => {
-  var page = parseInt(req.query.current) || 0; //for next page pass 1 here
+  var page = parseInt(req.query.current) || 0;
   var limit = parseInt(req.query.pageSize) || 10;
+  var sortBy = req.query.sortBy || "_id"; // default _id
+  var sortOrder =
+    req.query.sortOrder === "ascend"
+      ? 1
+      : req.query.sortOrder === "descend"
+      ? -1
+      : null;
   var query = {};
   Company.find(query)
-    .skip((page - 1) * limit) //Notice here
+    .sort({ [sortBy]: sortOrder })
+    .skip((page - 1) * limit)
     .limit(limit)
     .exec()
     .then((doc) => {

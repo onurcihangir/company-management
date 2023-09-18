@@ -7,7 +7,12 @@ import {
   PlusCircleOutlined,
 } from "@ant-design/icons";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
-import type { FilterValue, SorterResult } from "antd/es/table/interface";
+import type {
+  FilterValue,
+  Key,
+  SortOrder,
+  SorterResult,
+} from "antd/es/table/interface";
 import axios from "axios";
 import { Product, ProductRequestResponse } from "./Products.types";
 import ProductEditModal from "./ProductEditModal";
@@ -17,16 +22,10 @@ import { Company } from "../company/Companies.types";
 
 interface TableParams {
   pagination?: TablePaginationConfig;
-  sortField?: string;
-  sortOrder?: string;
+  field?: Key | readonly Key[] | undefined;
+  order?: SortOrder | undefined;
   filters?: Record<string, FilterValue | null>;
 }
-
-// const getRandomuserParams = (params: TableParams) => ({
-//   results: params.pagination?.pageSize,
-//   page: params.pagination?.current,
-//   ...params,
-// });
 
 const Products: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -67,30 +66,35 @@ const Products: React.FC = () => {
       title: "Name",
       dataIndex: "name",
       width: "20%",
+      sorter: true,
     },
     {
       title: "Category",
       dataIndex: "category",
       width: "20%",
+      sorter: true,
     },
     {
       title: "Amount",
       dataIndex: "amount",
       width: "20%",
+      sorter: true,
     },
     {
       title: "Amount Unit",
       dataIndex: "amountUnit",
       width: "20%",
+      sorter: true,
     },
     {
       title: "Company",
       dataIndex: "company",
       width: "20%",
+      sorter: true,
       render: (company) => company.name,
     },
     {
-      title: "actions",
+      title: "Actions",
       width: "20%",
       render: (product) => {
         return (
@@ -112,8 +116,6 @@ const Products: React.FC = () => {
             >
               Delete
             </Button>
-            {/* <EditOutlined onClick={() => handleEdit(product)} />
-            <DeleteOutlined onClick={() => showDeleteModal(product)} /> */}
           </>
         );
       },
@@ -121,7 +123,6 @@ const Products: React.FC = () => {
   ];
 
   const showDeleteModal = (product: Product) => {
-    console.log(product);
     setOpenDelete(true);
     setSelectedProduct(product);
   };
@@ -168,12 +169,13 @@ const Products: React.FC = () => {
           params: {
             current: tableParams.pagination?.current,
             pageSize: tableParams.pagination?.pageSize,
+            sortBy: tableParams.field,
+            sortOrder: tableParams.order,
           },
           headers: { Authorization: "Bearer " + localStorage.getItem("token") },
         }
       );
       if (data) {
-        console.log(data)
         setTableData(data.products);
         setTableParams({
           ...tableParams,
@@ -191,6 +193,8 @@ const Products: React.FC = () => {
     update,
     tableParams.pagination?.current,
     tableParams.pagination?.pageSize,
+    tableParams.field,
+    tableParams.order,
   ]);
 
   const handleTableChange = (
@@ -203,11 +207,6 @@ const Products: React.FC = () => {
       filters,
       ...sorter,
     });
-
-    // // `dataSource` is useless since `pageSize` changed
-    // if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-    //   setTableData([]);
-    // }
   };
 
   return (

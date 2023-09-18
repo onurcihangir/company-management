@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 // import qs from "qs";
 import { Button, Table, message } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
-import type { FilterValue, SorterResult } from "antd/es/table/interface";
+import type {
+  FilterValue,
+  Key,
+  SortOrder,
+  SorterResult,
+} from "antd/es/table/interface";
 import axios from "axios";
 import {
   EditOutlined,
@@ -16,16 +21,10 @@ import CompanyEditModal from "./CompanyEditModal";
 
 interface TableParams {
   pagination?: TablePaginationConfig;
-  sortField?: string;
-  sortOrder?: string;
+  field?: Key | readonly Key[] | undefined;
+  order?: SortOrder | undefined;
   filters?: Record<string, FilterValue | null>;
 }
-
-// const getRandomuserParams = (params: TableParams) => ({
-//   results: params.pagination?.pageSize,
-//   page: params.pagination?.current,
-//   ...params,
-// });
 
 const Companies: React.FC = () => {
   const columns: ColumnsType<Company> = [
@@ -38,24 +37,28 @@ const Companies: React.FC = () => {
       title: "Name",
       dataIndex: "name",
       width: "20%",
+      sorter: true,
     },
     {
       title: "Legal Number",
       dataIndex: "legalNumber",
       width: "10%",
+      sorter: true,
     },
     {
       title: "Incorporation Country",
       dataIndex: "incorporationCountry",
       width: "20%",
+      sorter: true,
     },
     {
       title: "Website",
       dataIndex: "website",
       width: "20%",
+      sorter: true,
     },
     {
-      title: "actions",
+      title: "Actions",
       width: "20%",
       render: (company) => {
         return (
@@ -77,8 +80,6 @@ const Companies: React.FC = () => {
             >
               Delete
             </Button>
-            {/* <EditOutlined onClick={() => handleEdit(company)} /> */}
-            {/* <DeleteOutlined onClick={() => showDeleteModal(company)} /> */}
           </>
         );
       },
@@ -133,6 +134,8 @@ const Companies: React.FC = () => {
           params: {
             current: tableParams.pagination?.current,
             pageSize: tableParams.pagination?.pageSize,
+            sortBy: tableParams.field,
+            sortOrder: tableParams.order,
           },
           headers: { Authorization: "Bearer " + localStorage.getItem("token") },
         }
@@ -154,6 +157,8 @@ const Companies: React.FC = () => {
     update,
     tableParams.pagination?.current,
     tableParams.pagination?.pageSize,
+    tableParams.field,
+    tableParams.order,
   ]);
 
   const handleTableChange = (
@@ -166,11 +171,6 @@ const Companies: React.FC = () => {
       filters,
       ...sorter,
     });
-
-    // `dataSource` is useless since `pageSize` changed
-    if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-      setTableData([]);
-    }
   };
 
   return (

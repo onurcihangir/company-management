@@ -42,7 +42,10 @@ const CompanyDeleteModal: React.FC<{
         confirmLoading={confirmLoading}
         onCancel={handleCancel}
       >
-        <p>Are you sure you want to delete the company named {company.name}?</p>
+        <p>
+          Are you sure you want to delete the company named{" "}
+          {<b>{company.name}</b>}?
+        </p>
       </Modal>
     </>
   );

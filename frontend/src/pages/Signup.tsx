@@ -28,7 +28,6 @@ const Signup: React.FC = () => {
       }, 3000);
     } catch (err: any) {
       if (err.response) {
-        console.log(err.response);
         // The client was given an error response (5xx, 4xx)
         messageApi.open({
           type: "error",

@@ -9,11 +9,19 @@ const Company = require("../../companies");
 const auth = require("../../auth");
 
 router.get("/", auth, (req, res) => {
-  var page = parseInt(req.query.current) || 0; //for next page pass 1 here
-  var limit = parseInt(req.query.pageSize) || 10;
+  var page = parseInt(req.query.current) || 0; // default 0
+  var limit = parseInt(req.query.pageSize) || 10; // default 10
+  var sortBy = req.query.sortBy || "_id"; // default _id
+  var sortOrder =
+    req.query.sortOrder === "ascend"
+      ? 1
+      : req.query.sortOrder === "descend"
+      ? -1
+      : null;
   var query = {};
   Product.find(query)
-    .skip((page - 1) * limit) //Notice here
+    .sort({ [sortBy]: sortOrder })
+    .skip((page - 1) * limit)
     .limit(limit)
     .exec()
     .then((doc) => {
@@ -60,19 +68,27 @@ router.post("/", auth, (req, res) => {
 
 router.put("/:id", auth, (req, res) => {
   // const newProduct = new Product(req.body);
-  Company.findById({ _id: req.body.company }).then((data) => {
-    const body = {
-      ...req.body,
-      company: data,
-    };
-    Product.findByIdAndUpdate(req.params.id, body)
-      .then(() => {
-        res.status(200).send({ message: "Success!" });
+  if (req.body.company) {
+    Company.findById({ _id: req.body.company })
+      .then((data) => {
+        const body = {
+          ...req.body,
+          company: data,
+        };
+        Product.findByIdAndUpdate(req.params.id, body)
+          .then(() => {
+            res.status(200).send({ message: "Success!" });
+          })
+          .catch((err) => {
+            throw err;
+          });
       })
       .catch((err) => {
-        throw err;
+        return res.status(400).send({ message: "Company not found" });
       });
-  });
+  } else {
+    return res.status(400).send({ message: "Company must be select" });
+  }
 });
 
 //Delete Product

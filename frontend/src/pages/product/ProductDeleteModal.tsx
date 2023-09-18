@@ -42,7 +42,10 @@ const ProductDeleteModal: React.FC<{
         confirmLoading={confirmLoading}
         onCancel={handleCancel}
       >
-        <p>Are you sure you want to delete the product named {product.name}?</p>
+        <p>
+          Are you sure you want to delete the product named{" "}
+          {<b>{product.name}</b>}?
+        </p>
       </Modal>
     </>
   );

@@ -27,7 +27,6 @@ const ProductCreateModal: React.FC<{
 
   const handleOk = async () => {
     setConfirmLoading(true);
-    console.log(newProduct);
     const resp = await axios.post(
       `http://localhost:8000/api/products/`,
       newProduct,
@@ -74,7 +73,9 @@ const ProductCreateModal: React.FC<{
         onCancel={handleCancel}
       >
         <Input
+          style={{ marginBottom: 10 }}
           placeholder="Name"
+          addonBefore={<div style={{ width: "102.29px" }}>Name</div>}
           value={newProduct?.name}
           onChange={(event) =>
             setNewProduct({
@@ -84,7 +85,9 @@ const ProductCreateModal: React.FC<{
           }
         />
         <Input
+          style={{ marginBottom: 10 }}
           placeholder="Category"
+          addonBefore={<div style={{ width: "102.29px" }}>Category</div>}
           value={newProduct?.category}
           onChange={(event) =>
             setNewProduct({
@@ -94,7 +97,9 @@ const ProductCreateModal: React.FC<{
           }
         />
         <Input
+          style={{ marginBottom: 10 }}
           placeholder="Amount"
+          addonBefore={<div style={{ width: "102.29px" }}>Amount</div>}
           value={newProduct?.amount}
           onChange={(event) =>
             setNewProduct({
@@ -104,7 +109,9 @@ const ProductCreateModal: React.FC<{
           }
         />
         <Input
+          style={{ marginBottom: 10 }}
           placeholder="Amount Unit"
+          addonBefore={<div style={{ width: "102.29px" }}>Amount Unit</div>}
           value={newProduct?.amountUnit}
           onChange={(event) =>
             setNewProduct({
@@ -114,6 +121,7 @@ const ProductCreateModal: React.FC<{
           }
         />
         <Select
+          style={{ width: "100%" }}
           showSearch
           placeholder="Select a Company"
           optionFilterProp="children"

@@ -26,6 +26,7 @@ const ProductEditModal: React.FC<{
       newProduct,
       { headers: { Authorization: "Bearer " + localStorage.getItem("token") } }
     );
+    console.log(resp);
     messageApi.open({
       type: "success",
       content: resp.data.message,
@@ -37,13 +38,6 @@ const ProductEditModal: React.FC<{
   };
 
   const handleCancel = () => {
-    // setNewProduct({
-    //   _id: 0,
-    //   name: "",
-    //   legalNumber: 0,
-    //   incorporationCountry: "",
-    //   website: "",
-    // });
     setOpen(false);
   };
 
@@ -63,7 +57,9 @@ const ProductEditModal: React.FC<{
         onCancel={handleCancel}
       >
         <Input
+          style={{ marginBottom: 10 }}
           placeholder="Name"
+          addonBefore={<div style={{ width: "102.29px" }}>Name</div>}
           value={newProduct?.name}
           onChange={(event) =>
             setNewProduct({
@@ -73,7 +69,9 @@ const ProductEditModal: React.FC<{
           }
         />
         <Input
-          placeholder="Legal Number"
+          style={{ marginBottom: 10 }}
+          placeholder="Amount"
+          addonBefore={<div style={{ width: "102.29px" }}>Amount</div>}
           value={newProduct?.amount}
           onChange={(event) =>
             setNewProduct({
@@ -83,17 +81,9 @@ const ProductEditModal: React.FC<{
           }
         />
         <Input
-          placeholder="Incorporation Country"
-          value={newProduct?.category}
-          onChange={(event) =>
-            setNewProduct({
-              ...newProduct,
-              category: event.target.value,
-            })
-          }
-        />
-        <Input
-          placeholder="Website"
+          style={{ marginBottom: 10 }}
+          placeholder="Amount Unit"
+          addonBefore={<div style={{ width: "102.29px" }}>Amount Unit</div>}
           value={newProduct?.amountUnit}
           onChange={(event) =>
             setNewProduct({
@@ -102,7 +92,20 @@ const ProductEditModal: React.FC<{
             })
           }
         />
+        <Input
+          style={{ marginBottom: 10 }}
+          placeholder="Category"
+          addonBefore={<div style={{ width: "102.29px" }}>Category</div>}
+          value={newProduct?.category}
+          onChange={(event) =>
+            setNewProduct({
+              ...newProduct,
+              category: event.target.value,
+            })
+          }
+        />
         <Select
+          style={{ width: "100%" }}
           showSearch
           placeholder="Select a Company"
           optionFilterProp="children"
