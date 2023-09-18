@@ -103,4 +103,14 @@ router.delete("/:id", auth, (req, res) => {
     });
 });
 
+router.get("/getList", auth, (req, res) => {
+  Product.find()
+    .then((data) => {
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      throw err;
+    });
+});
+
 module.exports = router;

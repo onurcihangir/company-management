@@ -2,7 +2,6 @@ import React, { Dispatch, SetStateAction, useState } from "react";
 import axios from "axios";
 import { Input, Modal, Select } from "antd";
 import { Product } from "./Products.types";
-import { Company } from "../company/Companies.types";
 import { MessageInstance } from "antd/es/message/interface";
 
 const ProductCreateModal: React.FC<{
