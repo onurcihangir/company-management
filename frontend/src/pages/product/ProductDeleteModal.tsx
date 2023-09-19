@@ -15,18 +15,27 @@ const ProductDeleteModal: React.FC<{
 
   const handleOk = async () => {
     setConfirmLoading(true);
-    const resp = await axios.delete(
-      `http://localhost:8000/api/products/${product._id}`,
-      { headers: { Authorization: "Bearer " + localStorage.getItem("token") } }
-    );
-    messageApi.open({
-      type: "success",
-      content: resp.data.message,
-    });
-    console.log(resp);
+    try {
+      const resp = await axios.delete(
+        `http://localhost:8000/api/products/${product._id}`,
+        {
+          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+        }
+      );
+      messageApi.open({
+        type: "success",
+        content: resp.data.message,
+      });
+
+      setOpen(false);
+      reload();
+    } catch (error: any) {
+      messageApi.open({
+        type: "error",
+        content: error.response.data.message,
+      });
+    }
     setConfirmLoading(false);
-    setOpen(false);
-    reload();
   };
 
   const handleCancel = () => {

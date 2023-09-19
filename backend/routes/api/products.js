@@ -4,20 +4,23 @@ const router = express.Router();
 
 // const uuid = require("uuid");
 
-const Product = require("../../products");
-const Company = require("../../companies");
+const Product = require("../../models/products");
+const Company = require("../../models/companies");
 const auth = require("../../auth");
 
 router.get("/", auth, (req, res) => {
   var page = parseInt(req.query.current) || 0; // default 0
   var limit = parseInt(req.query.pageSize) || 10; // default 10
-  var sortBy = req.query.sortBy || "_id"; // default _id
+  // default sort by _id
+  // if user click to cancel sorting then sort by _id
+  var sortBy = req.query.sortOrder ? req.query.sortBy : "_id";
   var sortOrder =
     req.query.sortOrder === "ascend"
       ? 1
       : req.query.sortOrder === "descend"
       ? -1
       : null;
+
   var query = {};
   Product.find(query)
     .sort({ [sortBy]: sortOrder })
@@ -36,7 +39,10 @@ router.get("/", auth, (req, res) => {
           });
         })
         .catch((err) => {
-          return res.json(err);
+          return res.status(500).send({
+            message: "Error when fetching Products",
+            err,
+          });
         });
     })
     .catch((err) => {
@@ -59,7 +65,10 @@ router.post("/", auth, (req, res) => {
         res.status(200).send({ message: "Success!" });
       })
       .catch((err) => {
-        throw err;
+        return res.status(500).send({
+          message: "Error when creating new Product",
+          err,
+        });
       });
   });
 });
@@ -80,7 +89,10 @@ router.put("/:id", auth, (req, res) => {
             res.status(200).send({ message: "Success!" });
           })
           .catch((err) => {
-            throw err;
+            return res.status(500).send({
+              message: "Error when updating Product",
+              err,
+            });
           });
       })
       .catch((err) => {
@@ -99,7 +111,10 @@ router.delete("/:id", auth, (req, res) => {
       res.status(200).send({ message: "Success!" });
     })
     .catch((err) => {
-      throw err;
+      return res.status(500).send({
+        message: "Error when deleting Product",
+        err,
+      });
     });
 });
 
@@ -109,7 +124,10 @@ router.get("/getList", auth, (req, res) => {
       res.status(200).send(data);
     })
     .catch((err) => {
-      throw err;
+      return res.status(500).send({
+        message: "Error when fetching Products",
+        err,
+      });
     });
 });
 

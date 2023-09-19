@@ -1,7 +1,7 @@
 const mongoose = require("mongoose"),
   jwt = require("jsonwebtoken"),
   bcrypt = require("bcrypt"),
-  User = require("../../users");
+  User = require("../../models/users");
 
 const express = require("express");
 
@@ -52,21 +52,5 @@ router.post("/login", (req, res) => {
       });
     });
 });
-
-// exports.loginRequired = function (req, res, next) {
-//   if (req.user) {
-//     next();
-//   } else {
-//     return res.status(401).json({ message: "Unauthorized user!!" });
-//   }
-// };
-// exports.profile = function (req, res, next) {
-//   if (req.user) {
-//     res.send(req.user);
-//     next();
-//   } else {
-//     return res.status(401).json({ message: "Invalid token" });
-//   }
-// };
 
 module.exports = router;

@@ -146,47 +146,64 @@ const Products: React.FC = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       setLoading(true);
-      const { data } = await axios.get<Company[]>(
-        `http://localhost:8000/api/companies/getList`,
-        {
-          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+      try {
+        const { data } = await axios.get<Company[]>(
+          `http://localhost:8000/api/companies/getList`,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          }
+        );
+        if (data) {
+          let arr = [];
+          for (let i = 0; i < data.length; i++) {
+            let company: any = {};
+            company["value"] = data[i]._id;
+            company["label"] = data[i].name;
+            arr.push(company);
+          }
+          setCompanies(arr);
         }
-      );
-      if (data) {
-        let arr = [];
-        for (let i = 0; i < data.length; i++) {
-          let company: any = {};
-          company["value"] = data[i]._id;
-          company["label"] = data[i].name;
-          arr.push(company);
-        }
-        setCompanies(arr);
+      } catch (error: any) {
+        messageApi.open({
+          type: "error",
+          content: error.response.data.message,
+        });
       }
       setLoading(false);
     };
     const fetchData = async () => {
       setLoading(true);
-      const { data } = await axios.get<ProductRequestResponse>(
-        `http://localhost:8000/api/products`,
-        {
-          params: {
-            current: tableParams.pagination?.current,
-            pageSize: tableParams.pagination?.pageSize,
-            sortBy: tableParams.field,
-            sortOrder: tableParams.order,
-          },
-          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+      try {
+        const { data } = await axios.get<ProductRequestResponse>(
+          `http://localhost:8000/api/products`,
+          {
+            params: {
+              current: tableParams.pagination?.current,
+              pageSize: tableParams.pagination?.pageSize,
+              sortBy: tableParams.field,
+              sortOrder: tableParams.order,
+            },
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          }
+        );
+        if (data) {
+          setTableData(data.products);
+          setTableParams({
+            ...tableParams,
+            pagination: {
+              ...tableParams.pagination,
+              total: data.total,
+            },
+          });
         }
-      );
-      console.log(data);
-      if (data) {
-        setTableData(data.products);
-        setTableParams({
-          ...tableParams,
-          pagination: {
-            ...tableParams.pagination,
-            total: data.total,
-          },
+      } catch (error: any) {
+        messageApi.open({
+          type: "error",
+          content: error.response.data.message,
         });
       }
       setLoading(false);

@@ -128,26 +128,35 @@ const Companies: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const { data } = await axios.get<CompanyRequestResponse>(
-        `http://localhost:8000/api/companies`,
-        {
-          params: {
-            current: tableParams.pagination?.current,
-            pageSize: tableParams.pagination?.pageSize,
-            sortBy: tableParams.field,
-            sortOrder: tableParams.order,
-          },
-          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+      try {
+        const { data } = await axios.get<CompanyRequestResponse>(
+          `http://localhost:8000/api/companies`,
+          {
+            params: {
+              current: tableParams.pagination?.current,
+              pageSize: tableParams.pagination?.pageSize,
+              sortBy: tableParams.field,
+              sortOrder: tableParams.order,
+            },
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          }
+        );
+        if (data) {
+          setTableData(data.companies);
+          setTableParams({
+            ...tableParams,
+            pagination: {
+              ...tableParams.pagination,
+              total: data.total,
+            },
+          });
         }
-      );
-      if (data) {
-        setTableData(data.companies);
-        setTableParams({
-          ...tableParams,
-          pagination: {
-            ...tableParams.pagination,
-            total: data.total,
-          },
+      } catch (error: any) {
+        messageApi.open({
+          type: "error",
+          content: error.response.data.message,
         });
       }
       setLoading(false);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Col, Row, Statistic, Table, Typography } from "antd";
+import { Card, Col, Row, Statistic, Table, Typography, message } from "antd";
 import { BankOutlined, ProjectOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { Company } from "./company/Companies.types";
@@ -11,6 +11,7 @@ const Home: React.FC = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [lastAddedCompanies, setLastAddedCompanies] = useState<Company[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const columns: ColumnsType<Company> = [
     {
@@ -38,37 +39,55 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       setLoading(true);
-      const { data } = await axios.get<Company[]>(
-        `http://localhost:8000/api/companies/getList`,
-        {
-          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+      try {
+        const { data } = await axios.get<Company[]>(
+          `http://localhost:8000/api/companies/getList`,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          }
+        );
+        if (data) {
+          setCompanies(data);
+          // if there are more than 3 companies
+          if (data.length > 3) {
+            // get last 3 companies
+            setLastAddedCompanies(data.slice(-3));
+          } else {
+            // else get all companies
+            setLastAddedCompanies(data);
+          }
         }
-      );
-      if (data) {
-        setCompanies(data);
-        // if there are more than 3 companies
-        if (data.length > 3) {
-          // get last 3 companies
-          setLastAddedCompanies(data.slice(-3));
-        } else {
-          // else get all companies
-          setLastAddedCompanies(data);
-        }
+      } catch (error: any) {
+        messageApi.open({
+          type: "error",
+          content: error.response.data.message,
+        });
       }
+
       setLoading(false);
     };
 
     const fetchProducts = async () => {
       setLoading(true);
-      const { data } = await axios.get<Product[]>(
-        `http://localhost:8000/api/products/getList`,
-        {
-          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+      try {
+        const { data } = await axios.get<Product[]>(
+          `http://localhost:8000/api/products/getList`,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          }
+        );
+        if (data) {
+          setProducts(data);
         }
-      );
-      let arr:Product[] = []
-      if (arr) {
-        setProducts(arr);
+      } catch (error: any) {
+        messageApi.open({
+          type: "error",
+          content: error.response.data.message,
+        });
       }
       setLoading(false);
     };
@@ -83,6 +102,7 @@ const Home: React.FC = () => {
         width: "100%",
       }}
     >
+      {contextHolder}
       <Row gutter={16}>
         <Col span={12}>
           <Card

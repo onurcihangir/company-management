@@ -17,21 +17,28 @@ const CompanyCreateModal: React.FC<{
     form
       .validateFields()
       .then(async (values) => {
-        const resp = await axios.post(
-          `http://localhost:8000/api/companies/`,
-          values,
-          {
-            headers: {
-              Authorization: "Bearer " + localStorage.getItem("token"),
-            },
-          }
-        );
-        messageApi.open({
-          type: "success",
-          content: resp.data.message,
-        });
-        handleCancel();
-        reload();
+        try {
+          const resp = await axios.post(
+            `http://localhost:8000/api/companies/`,
+            values,
+            {
+              headers: {
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
+            }
+          );
+          messageApi.open({
+            type: "success",
+            content: resp.data.message,
+          });
+          handleCancel();
+          reload();
+        } catch (error: any) {
+          messageApi.open({
+            type: "error",
+            content: error.response.data.message,
+          });
+        }
       })
       .catch((info) => {
         console.log("Validate Failed:", info);

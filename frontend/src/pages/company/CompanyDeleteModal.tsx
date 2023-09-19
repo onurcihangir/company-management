@@ -15,18 +15,27 @@ const CompanyDeleteModal: React.FC<{
 
   const handleOk = async () => {
     setConfirmLoading(true);
-    const resp = await axios.delete(
-      `http://localhost:8000/api/companies/${company._id}`,
-      { headers: { Authorization: "Bearer " + localStorage.getItem("token") } }
-    );
-    console.log(resp);
-    messageApi.open({
-      type: "success",
-      content: resp.data.message,
-    });
+    try {
+      const resp = await axios.delete(
+        `http://localhost:8000/api/companies/${company._id}`,
+        {
+          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+        }
+      );
+      console.log(resp);
+      messageApi.open({
+        type: "success",
+        content: resp.data.message,
+      });
+      setOpen(false);
+      reload();
+    } catch (error: any) {
+      messageApi.open({
+        type: "error",
+        content: error.response.data.message,
+      });
+    }
     setConfirmLoading(false);
-    setOpen(false);
-    reload();
   };
 
   const handleCancel = () => {
