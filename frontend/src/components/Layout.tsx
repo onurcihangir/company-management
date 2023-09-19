@@ -23,7 +23,6 @@ const AppLayout: React.FC<{
   return (
     <Layout style={{ height: "100vh", width: "100%" }}>
       <Sider breakpoint="lg" collapsedWidth="0">
-        <div className="demo-logo-vertical" />
         <Menu
           theme="dark"
           mode="inline"
@@ -46,6 +45,7 @@ const AppLayout: React.FC<{
             display: "flex",
             alignItems: "center",
             justifyContent: "end",
+            boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
           }}
         >
           <Button
@@ -77,6 +77,7 @@ const AppLayout: React.FC<{
               alignItems: "flex-start",
               justifyContent: "center",
               background: colorBgContainer,
+              boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
             }}
           >
             {/* @ts-ignore */}

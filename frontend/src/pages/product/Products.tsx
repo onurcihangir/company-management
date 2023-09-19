@@ -57,11 +57,11 @@ const Products: React.FC = () => {
   >([]);
 
   const columns: ColumnsType<Product> = [
-    {
-      title: "ID",
-      dataIndex: "_id",
-      width: "20%",
-    },
+    // {
+    //   title: "ID",
+    //   dataIndex: "_id",
+    //   width: "20%",
+    // },
     {
       title: "Name",
       dataIndex: "name",
@@ -77,13 +77,13 @@ const Products: React.FC = () => {
     {
       title: "Amount",
       dataIndex: "amount",
-      width: "20%",
+      width: "10%",
       sorter: true,
     },
     {
       title: "Amount Unit",
       dataIndex: "amountUnit",
-      width: "20%",
+      width: "10%",
       sorter: true,
     },
     {
@@ -249,7 +249,7 @@ const Products: React.FC = () => {
         pagination={tableParams.pagination}
         loading={loading}
         onChange={handleTableChange}
-        scroll={{ x: 1000, y: 500 }}
+        scroll={{ x: 1000, y: 400 }}
       />
     </div>
   );

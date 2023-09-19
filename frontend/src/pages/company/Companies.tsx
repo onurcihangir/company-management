@@ -28,11 +28,11 @@ interface TableParams {
 
 const Companies: React.FC = () => {
   const columns: ColumnsType<Company> = [
-    {
-      title: "ID",
-      dataIndex: "_id",
-      width: "10%",
-    },
+    // {
+    //   title: "ID",
+    //   dataIndex: "_id",
+    //   width: "10%",
+    // },
     {
       title: "Name",
       dataIndex: "name",
@@ -42,7 +42,7 @@ const Companies: React.FC = () => {
     {
       title: "Legal Number",
       dataIndex: "legalNumber",
-      width: "10%",
+      width: "20%",
       sorter: true,
     },
     {
@@ -211,7 +211,7 @@ const Companies: React.FC = () => {
         pagination={tableParams.pagination}
         loading={loading}
         onChange={handleTableChange}
-        scroll={{ x: "max-content", y: 500 }} // y: 500
+        scroll={{ x: 1000, y: 400 }}
       />
     </div>
   );
