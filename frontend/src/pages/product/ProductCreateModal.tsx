@@ -1,7 +1,6 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
 import axios from "axios";
-import { Input, Modal, Select } from "antd";
-import { Product } from "./Products.types";
+import { Form, Input, Modal, Select } from "antd";
 import { MessageInstance } from "antd/es/message/interface";
 
 const ProductCreateModal: React.FC<{
@@ -12,47 +11,37 @@ const ProductCreateModal: React.FC<{
   messageApi: MessageInstance;
 }> = ({ companies, open, setOpen, reload, messageApi }) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [newProduct, setNewProduct] = useState<Product>({
-    _id: 0,
-    name: "",
-    amount: 0,
-    amountUnit: "",
-    category: "",
-    company: {
-      id: 0,
-      name: "",
-    },
-  });
+  const [form] = Form.useForm();
 
   const handleOk = async () => {
     setConfirmLoading(true);
-    const resp = await axios.post(
-      `http://localhost:8000/api/products/`,
-      newProduct,
-      { headers: { Authorization: "Bearer " + localStorage.getItem("token") } }
-    );
-    messageApi.open({
-      type: "success",
-      content: resp.data.message,
-    });
-    console.log(resp);
+    form
+      .validateFields()
+      .then(async (values) => {
+        const resp = await axios.post(
+          `http://localhost:8000/api/products/`,
+          values,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          }
+        );
+        messageApi.open({
+          type: "success",
+          content: resp.data.message,
+        });
+        handleCancel();
+        reload();
+      })
+      .catch((info) => {
+        console.log("Validate Failed:", info);
+      });
     setConfirmLoading(false);
-    handleCancel();
-    reload();
   };
 
   const handleCancel = () => {
-    setNewProduct({
-      _id: 0,
-      name: "",
-      amount: 0,
-      amountUnit: "",
-      category: "",
-      company: {
-        id: 0,
-        name: "",
-      },
-    });
+    form.resetFields();
     setOpen(false);
   };
 
@@ -71,68 +60,62 @@ const ProductCreateModal: React.FC<{
         confirmLoading={confirmLoading}
         onCancel={handleCancel}
       >
-        <Input
-          style={{ marginBottom: 10 }}
-          placeholder="Name"
-          addonBefore={<div style={{ width: "102.29px" }}>Name</div>}
-          value={newProduct?.name}
-          onChange={(event) =>
-            setNewProduct({
-              ...newProduct,
-              name: event.target.value,
-            })
-          }
-        />
-        <Input
-          style={{ marginBottom: 10 }}
-          placeholder="Category"
-          addonBefore={<div style={{ width: "102.29px" }}>Category</div>}
-          value={newProduct?.category}
-          onChange={(event) =>
-            setNewProduct({
-              ...newProduct,
-              category: event.target.value,
-            })
-          }
-        />
-        <Input
-          style={{ marginBottom: 10 }}
-          placeholder="Amount"
-          addonBefore={<div style={{ width: "102.29px" }}>Amount</div>}
-          value={newProduct?.amount}
-          onChange={(event) =>
-            setNewProduct({
-              ...newProduct,
-              amount: Number(event.target.value),
-            })
-          }
-        />
-        <Input
-          style={{ marginBottom: 10 }}
-          placeholder="Amount Unit"
-          addonBefore={<div style={{ width: "102.29px" }}>Amount Unit</div>}
-          value={newProduct?.amountUnit}
-          onChange={(event) =>
-            setNewProduct({
-              ...newProduct,
-              amountUnit: event.target.value,
-            })
-          }
-        />
-        <Select
-          style={{ width: "100%" }}
-          showSearch
-          placeholder="Select a Company"
-          optionFilterProp="children"
-          onChange={(value) =>
-            setNewProduct({
-              ...newProduct,
-              company: value,
-            })
-          }
-          filterOption={filterOption}
-          options={companies}
-        />
+        <Form
+          name="basic"
+          form={form}
+          initialValues={{ remember: true }}
+          autoComplete="off"
+        >
+          <Form.Item
+            name="name"
+            rules={[{ required: true, message: "Can not be left blank!" }]}
+          >
+            <Input
+              placeholder="Name"
+              addonBefore={<div style={{ width: "102.29px" }}>Name</div>}
+            />
+          </Form.Item>
+          <Form.Item
+            name="category"
+            rules={[{ required: true, message: "Can not be left blank!" }]}
+          >
+            <Input
+              placeholder="Category"
+              addonBefore={<div style={{ width: "102.29px" }}>Category</div>}
+            />
+          </Form.Item>
+          <Form.Item
+            name="amount"
+            rules={[{ required: true, message: "Can not be left blank!" }]}
+          >
+            <Input
+              placeholder="Amount"
+              addonBefore={<div style={{ width: "102.29px" }}>Amount</div>}
+            />
+          </Form.Item>
+          <Form.Item
+            name="amountUnit"
+            rules={[{ required: true, message: "Can not be left blank!" }]}
+          >
+            <Input
+              placeholder="Amount Unit"
+              addonBefore={<div style={{ width: "102.29px" }}>Amount Unit</div>}
+            />
+          </Form.Item>
+          <Form.Item
+            name="company"
+            rules={[{ required: true, message: "Can not be left blank!" }]}
+          >
+            <Select
+              style={{ width: "100%" }}
+              showSearch
+              placeholder="Select a Company"
+              optionFilterProp="children"
+              filterOption={filterOption}
+              options={companies}
+            />
+          </Form.Item>
+        </Form>
       </Modal>
     </>
   );

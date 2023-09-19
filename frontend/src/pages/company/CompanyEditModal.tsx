@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
 import axios from "axios";
-import { Input, Modal } from "antd";
+import { Form, Input, Modal } from "antd";
 import { Company } from "./Companies.types";
 import { MessageInstance } from "antd/es/message/interface";
 
@@ -12,30 +12,43 @@ const CompanyEditModal: React.FC<{
   messageApi: MessageInstance;
 }> = ({ company, open, setOpen, reload, messageApi }) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [newCompany, setNewCompany] = useState<Company>(company);
+
+  const [form] = Form.useForm();
 
   useEffect(() => {
-    setNewCompany(company);
+    // to get initial values of company
+    form.setFieldsValue({ ...company });
   }, [company]);
 
   const handleOk = async () => {
     setConfirmLoading(true);
-    const resp = await axios.put(
-      `http://localhost:8000/api/companies/${company._id}`,
-      newCompany,
-      { headers: { Authorization: "Bearer " + localStorage.getItem("token") } }
-    );
-    console.log(resp);
-    messageApi.open({
-      type: "success",
-      content: resp.data.message,
-    });
+    form
+      .validateFields()
+      .then(async (values) => {
+        const resp = await axios.put(
+          `http://localhost:8000/api/companies/${company._id}`,
+          values,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          }
+        );
+        messageApi.open({
+          type: "success",
+          content: resp.data.message,
+        });
+        handleCancel();
+        reload();
+      })
+      .catch((info) => {
+        console.log("Validate Failed:", info);
+      });
     setConfirmLoading(false);
-    handleCancel();
-    reload();
   };
 
   const handleCancel = () => {
+    form.resetFields();
     setOpen(false);
   };
 
@@ -48,63 +61,61 @@ const CompanyEditModal: React.FC<{
         confirmLoading={confirmLoading}
         onCancel={handleCancel}
       >
-        <Input
-          style={{ marginBottom: 10 }}
-          placeholder="Name"
-          addonBefore={<div style={{ width: "102.29px" }}>Name</div>}
-          value={newCompany?.name}
-          onChange={(event) =>
-            setNewCompany({
-              ...newCompany,
-              name: event.target.value,
-            })
-          }
-        />
-        <Input
-          style={{ marginBottom: 10 }}
-          placeholder="Legal Number"
-          addonBefore={<div style={{ width: "102.29px" }}>Legal Number</div>}
-          value={newCompany?.legalNumber}
-          onChange={(event) =>
-            setNewCompany({
-              ...newCompany,
-              legalNumber: Number(event.target.value),
-            })
-          }
-        />
-        <Input
-          style={{ marginBottom: 10 }}
-          placeholder="Incorporation Country"
-          addonBefore={
-            <div
-              style={{
-                width: "102.29px",
-                wordWrap: "break-word",
-                whiteSpace: "normal",
-              }}
-            >
-              Incorporation Country
-            </div>
-          }
-          value={newCompany?.incorporationCountry}
-          onChange={(event) =>
-            setNewCompany({
-              ...newCompany,
-              incorporationCountry: event.target.value,
-            })
-          }
-        />
-        <Input
-          placeholder="Website"
-          addonBefore={<div style={{ width: "102.29px" }}>Website</div>}
-          value={newCompany?.website}
-          onChange={(event) =>
-            setNewCompany({
-              ...newCompany,
-              website: event.target.value,
-            })
-          }
-        />
+        <Form
+          name="basic"
+          form={form}
+          initialValues={{ remember: true }}
+          autoComplete="off"
+        >
+          <Form.Item
+            name="name"
+            rules={[{ required: true, message: "Can not be left blank!" }]}
+          >
+            <Input
+              placeholder="Name"
+              addonBefore={<div style={{ width: "102.29px" }}>Name</div>}
+            />
+          </Form.Item>
+          <Form.Item
+            name="legalNumber"
+            rules={[{ required: true, message: "Can not be left blank!" }]}
+          >
+            <Input
+              placeholder="Legal Number"
+              addonBefore={
+                <div style={{ width: "102.29px" }}>Legal Number</div>
+              }
+            />
+          </Form.Item>
+          <Form.Item
+            name="incorporationCountry"
+            rules={[{ required: true, message: "Can not be left blank!" }]}
+          >
+            <Input
+              placeholder="Incorporation Country"
+              addonBefore={
+                <div
+                  style={{
+                    width: "102.29px",
+                    wordWrap: "break-word",
+                    whiteSpace: "normal",
+                  }}
+                >
+                  Incorporation Country
+                </div>
+              }
+            />
+          </Form.Item>
+          <Form.Item
+            name="website"
+            rules={[{ required: true, message: "Can not be left blank!" }]}
+          >
+            <Input
+              placeholder="Website"
+              addonBefore={<div style={{ width: "102.29px" }}>Website</div>}
+            />
+          </Form.Item>
+        </Form>
       </Modal>
     </>
   );

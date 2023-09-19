@@ -48,8 +48,11 @@ const Products: React.FC = () => {
     amountUnit: "",
     category: "",
     company: {
-      id: 0,
+      _id: "",
       name: "",
+      legalNumber: 0,
+      incorporationCountry: "",
+      website: "",
     },
   });
   const [companies, setCompanies] = useState<
@@ -175,6 +178,7 @@ const Products: React.FC = () => {
           headers: { Authorization: "Bearer " + localStorage.getItem("token") },
         }
       );
+      console.log(data);
       if (data) {
         setTableData(data.products);
         setTableParams({

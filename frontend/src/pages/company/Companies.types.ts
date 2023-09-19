@@ -1,5 +1,5 @@
 export type Company = {
-  _id: number;
+  _id: string;
   name: string;
   legalNumber: number;
   incorporationCountry: string;

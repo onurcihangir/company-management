@@ -90,7 +90,7 @@ const Companies: React.FC = () => {
   const [openAdd, setOpenAdd] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<Company>({
-    _id: 0,
+    _id: "",
     name: "",
     legalNumber: 0,
     incorporationCountry: "",
